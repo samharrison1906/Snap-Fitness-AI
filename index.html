@@ -104,8 +104,6 @@
   </div>
 
   <script>
-    const OPENAI_API_KEY =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; // <-- INSERT YOUR API KEY
-
     async function sendMessage() {
       const input = document.getElementById("user-input");
       const text = input.value.trim();
@@ -116,14 +114,12 @@
 
       addMessage("Thinking...", "bot", true);
 
-      const response = await fetch("https://api.openai.com/v1/chat/completions", {
+      const response = await fetch("https://super-water-ee9a.samharrison1906.workers.dev/", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${OPENAI_API_KEY}`,
+          "Content-Type": "application/json"
         },
         body: JSON.stringify({
-          model: "gpt-4o-mini",
           messages: [
             {
               role: "system",
@@ -159,7 +155,7 @@
 </body>
 </html>
 
-  
-
- 
     
+   
+
+  
