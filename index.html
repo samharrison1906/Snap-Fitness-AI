@@ -3,107 +3,163 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Snap Fitness Virtual Trainer</title>
+  <title>Snap AI Trainer - Custom Chat</title>
   <style>
     body {
       margin: 0;
       font-family: Arial, sans-serif;
-      background: #ffffff;
-      color: #111;
+      background: #f5f5f5;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
     }
+
     header {
       background: #e10600;
-      padding: 40px 20px;
-      text-align: center;
-      color: #fff;
-    }
-    header h1 {
-      font-size: 48px;
-      margin: 0;
-    }
-    header p {
-      font-size: 20px;
-      opacity: 0.9;
-    }
-    section {
-      max-width: 1200px;
-      margin: 40px auto;
-      padding: 0 20px;
-    }
-    .features {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 20px;
-      margin-top: 30px;
-    }
-    .feature-box {
+      color: white;
       padding: 20px;
-      border: 1px solid #ddd;
-      border-radius: 8px;
-    }
-    iframe {
-      width: 100%;
-      height: 900px;
-      border: none;
-      border-radius: 12px;
-      margin-top: 40px;
-    }
-    footer {
       text-align: center;
-      padding: 30px;
-      margin-top: 50px;
-      background: #f5f5f5;
+      font-size: 28px;
+      font-weight: bold;
+    }
+
+    #chat-container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      max-width: 800px;
+      margin: auto;
+      width: 100%;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+
+    #messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 10px;
+      background: white;
+      border-radius: 8px;
+      border: 1px solid #ddd;
+      margin-bottom: 20px;
+    }
+
+    .msg {
+      padding: 12px;
+      margin: 10px 0;
+      border-radius: 8px;
+      max-width: 80%;
+    }
+
+    .user {
+      background: #e10600;
+      color: white;
+      margin-left: auto;
+    }
+
+    .bot {
+      background: #eeeeee;
+      color: #111;
+      margin-right: auto;
+    }
+
+    #input-area {
+      display: flex;
+      gap: 10px;
+    }
+
+    #user-input {
+      flex: 1;
+      padding: 12px;
+      font-size: 16px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      padding: 12px 20px;
+      background: #e10600;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #c00500;
     }
   </style>
 </head>
-
 <body>
+  <header>Snap Fitness Havelock North - AI Virtual Trainer</header>
 
-  <header>
-    <h1>Snap Fitness Havelock North<br>AI Virtual Trainer</h1>
-    <p>Your 24/7 personalised workout + meal plan coach.</p>
-  </header>
+  <div id="chat-container">
+    <div id="messages"></div>
 
-  <section>
-    <h2>Use the Virtual Trainer Below</h2>
-    <p>Ask for workout plans, meal ideas, gym information, or how to use any machine.</p>
-
-    <!-- ⭐ EMBEDDED AI BOT -->
-    <iframe 
-      src="https://chatgpt.com/g/g-691abb288694819182bae7cf8df845d4-snap-trainer"
-      allow="fullscreen">
-    </iframe>
-  </section>
-
-  <section>
-    <h2>What This AI Trainer Does</h2>
-    <div class="features">
-      <div class="feature-box">
-        <h3>🏋️ Personalised Workouts</h3>
-        <p>Training plans based on goals and available Snap Fitness equipment.</p>
-      </div>
-      <div class="feature-box">
-        <h3>🍎 Meal Plans</h3>
-        <p>High-protein, muscle-gain or fat-loss meal ideas tailored to the user.</p>
-      </div>
-      <div class="feature-box">
-        <h3>❓ Gym Info & Support</h3>
-        <p>Hours, membership questions, machine help, and gym etiquette.</p>
-      </div>
-      <div class="feature-box">
-        <h3>💬 Machine Tutorials</h3>
-        <p>Step-by-step instructions for using every machine safely.</p>
-      </div>
+    <div id="input-area">
+      <input id="user-input" type="text" placeholder="Ask me for a workout, meal plan, or machine tutorial..." />
+      <button onclick="sendMessage()">Send</button>
     </div>
-  </section>
+  </div>
 
-  <footer>
-    <p>© 2025 Snap Fitness Virtual Trainer — Created by Your Name</p>
-  </footer>
+  <script>
+    const OPENAI_API_KEY =1906; // <-- INSERT YOUR API KEY
 
+    async function sendMessage() {
+      const input = document.getElementById("user-input");
+      const text = input.value.trim();
+      if (!text) return;
+
+      addMessage(text, "user");
+      input.value = "";
+
+      addMessage("Thinking...", "bot", true);
+
+      const response = await fetch("https://api.openai.com/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${OPENAI_API_KEY}`,
+        },
+        body: JSON.stringify({
+          model: "gpt-4o-mini",
+          messages: [
+            {
+              role: "system",
+              content: "You are the Snap Fitness Havelock North Virtual Trainer. Provide workouts, meal plans, gym info, and machine tutorials. Be friendly and helpful."
+            },
+            {
+              role: "user",
+              content: text
+            }
+          ]
+        })
+      });
+
+      const data = await response.json();
+
+      const msgs = document.querySelectorAll('.bot');
+      msgs[msgs.length - 1].remove();
+
+      addMessage(data.choices[0].message.content, "bot");
+    }
+
+    function addMessage(text, sender, isPlaceholder = false) {
+      const msgBox = document.createElement("div");
+      msgBox.className = `msg ${sender}`;
+      msgBox.textContent = text;
+
+      if (isPlaceholder) msgBox.style.opacity = 0.6;
+
+      document.getElementById("messages").appendChild(msgBox);
+      document.getElementById("messages").scrollTop = document.getElementById("messages").scrollHeight;
+    }
+  </script>
 </body>
 </html>
 
+  
 
  
     
